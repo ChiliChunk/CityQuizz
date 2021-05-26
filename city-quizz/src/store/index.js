@@ -7,19 +7,18 @@ export const store = new Vuex.Store({
 
   state: {
     score: 0,
-    questions : [
-      {label : 'Quel film est le mieux?', answers : ['Avatar' , 'James Bond' , 'Dumbo' , 'American Sniper'] , rightAnswer : 0 , answered : -1},
-      {label : 'Quel film est le pire?', answers : ['Taxi' , 'Pirate des caraibes' , 'Brice de Nice' , '0SS117'] , rightAnswer : 2 , answered : -1}],
+    questions : [],
     questionIndex : 0,
     quizzStarted : false
 
   },
 
   mutations: {
-    startQuizz (state) {
+    startQuizz (state, questions) {
       state.quizzStarted = true;
       state.score = 0;
       state.questionIndex = 0; 
+      state.questions = questions;
       state.questions.forEach(question =>{
         question.answered = -1
       })
@@ -38,7 +37,12 @@ export const store = new Vuex.Store({
 
   actions: {
     startQuizz ({commit}) {
-      commit('startQuizz')
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", "http://localhost:8080/questions", false ); // false for synchronous request
+      xmlHttp.send();
+      console.log(xmlHttp.responseText)
+      const questions = JSON.parse(xmlHttp.responseText)
+      commit('startQuizz', questions)
     },
     nextQuestion({commit}){
       commit('nextQuestion')
